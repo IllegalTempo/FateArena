@@ -1,0 +1,23 @@
+name: FateArena
+version: '0.1.0-SNAPSHOT'
+main: com.fatearena.FateArenaPlugin
+api-version: '26.3'
+description: A Spigot plugin for Minecraft 26.3.
+commands:
+  dummy:
+    description: Register an armor stand or spawn a persistent training dummy.
+    usage: /dummy <add|spawn>
+    permission: fatearena.dummy
+  toggleperspective:
+    description: Toggle visibility of your own third-person character display.
+    usage: /toggleperspective
+  displayfollow:
+    description: Switch display following for testing.
+    usage: /displayfollow <passenger|teleport>
+  select:
+    description: Select your character.
+    usage: /select <character>
+permissions:
+  fatearena.dummy:
+    description: Allows registering and spawning training dummies.
+    default: op

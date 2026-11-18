@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FateArena Server" type="JarApplication" factoryName="JAR Application">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/server/spigot-26.3.jar" />
+    <option name="VM_PARAMETERS" value="-Xms1G -Xmx2G" />
+    <option name="PROGRAM_PARAMETERS" value="nogui" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/server" />
+    <option name="ALTERNATIVE_JRE_PATH" value="C:/Program Files/Java/jdk-25.0.2" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <method v="2">
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="package -Plocal-server" />
+    </method>
+  </configuration>
+</component>
