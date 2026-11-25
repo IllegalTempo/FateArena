@@ -20,7 +20,7 @@ public final class ParticleEffects {
     }
 
     public static <T> void spawnHollowSphere(Location center, double radius, int points,
-                                            Particle particle, T data) {
+                                            Particle particle,double offset, T data) {
         World world = center.getWorld();
         // Space points evenly in height and rotate each by the golden angle.
         for (int point = 0; point < points; point++) {
@@ -30,7 +30,7 @@ public final class ParticleEffects {
             double x = center.getX() + ringRadius * Math.cos(angle);
             double y = center.getY() + radius * height;
             double z = center.getZ() + ringRadius * Math.sin(angle);
-            world.spawnParticle(particle, x, y, z, 1, 0, 0, 0, 0, data);
+            world.spawnParticle(particle, x, y, z, 1, offset, offset, offset, 0, data);
         }
     }
 }

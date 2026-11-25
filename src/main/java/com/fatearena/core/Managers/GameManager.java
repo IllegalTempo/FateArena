@@ -5,6 +5,7 @@ import com.fatearena.core.DamageNumber;
 import com.fatearena.core.GameMob;
 import com.fatearena.core.GamePlayer;
 import com.fatearena.core.InteractableEntity;
+import com.fatearena.core.Match.MatchInstance;
 import com.fatearena.core.PlayerBehaviour;
 import com.fatearena.otherinteractables.Dummy;
 import org.bukkit.Material;
@@ -50,6 +51,10 @@ public final class GameManager implements Listener {
     private BukkitTask updateTask;
     private BukkitTask oneSecondTask;
 
+    private final Map<UUID, MatchInstance> activeMatches = new HashMap<>();
+
+
+
     public GameManager(Plugin plugin) {
         this.plugin = plugin;
     }
@@ -76,6 +81,16 @@ public final class GameManager implements Listener {
     {
         gamePlayers.values().forEach(GamePlayer::oneSecondTick);
     }
+    public void startMatch(GamePlayer[] joiningPlayers)
+    {
+        UUID matchId = UUID.randomUUID();
+        activeMatches.put(matchId, new MatchInstance(matchId, joiningPlayers));
+
+    }
+    public MatchInstance getMatchInstance(UUID matchId) {
+        return activeMatches.get(matchId);
+    }
+
     public void stop() {
         if (updateTask != null) {
             updateTask.cancel();

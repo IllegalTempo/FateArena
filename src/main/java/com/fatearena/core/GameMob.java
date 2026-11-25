@@ -24,6 +24,12 @@ public class GameMob extends InteractableEntity{
     private PlayerTeam damageGlowTeam;
     private BukkitTask damageGlowTask;
 
+    protected static final int DEFENSE_MANA_COST = 5;
+    private static final int DEFENSE_ACTIVATE_MANA_COST = 10;
+    private static final double DEFENSE_SPHERE_RADIUS = 1.25;
+    private static final int DEFENSE_SPHERE_POINTS = 60;
+    private static final Particle.DustOptions DEFENSE_DUST = new Particle.DustOptions(org.bukkit.Color.AQUA, 0.8f);
+
     public GameMob(Entity entity, int maxhealth, int maxmana) {
         super(entity);
         this.health = maxhealth;
@@ -32,6 +38,14 @@ public class GameMob extends InteractableEntity{
         this.maxMana = maxmana;
 
     }
+    public void tick()
+    {
+        if(isDefending())
+        {
+            whileDefense();
+        }
+    }
+
     public boolean isDefending() {
         return isDefending;
     }
@@ -76,8 +90,22 @@ public class GameMob extends InteractableEntity{
         entity.getWorld().spawnParticle(Particle.BLOCK, entity.getLocation(), 100,
                 0.5, 1.0, 0.5, 0.0, Material.REDSTONE_BLOCK.createBlockData());
         flashDamageGlow();
+        int manaToDefense = amount;
+        drainManaForDefense(manaToDefense);
         if (onHit != null) {
             onHit.accept(this);
+        }
+    }
+    public void drainManaForDefense(int amount)
+    {
+        if(isDefending())
+        {
+            useMana(amount);
+            if(getMana() <= 0)
+            {
+                setDefending(false);
+                undefense();
+            }
         }
     }
 
@@ -123,7 +151,25 @@ public class GameMob extends InteractableEntity{
         damageGlowViewers.clear();
         damageGlowTeam = null;
     }
+    public void defense()
+    {
+        useMana(DEFENSE_ACTIVATE_MANA_COST);
 
+    }
+    private void whileDefense()
+    {
+        var center = getEntity().getLocation().add(0, 1, 0);
+        ParticleEffects.spawnHollowSphere(center, DEFENSE_SPHERE_RADIUS, DEFENSE_SPHERE_POINTS,
+                Particle.DUST,0.1d, DEFENSE_DUST);
+    }
+    public void undefense()
+    {
+
+    }
+    public void die(GameMob killer)
+    {
+
+    }
     @Override
     public void cleanup() {
         if (damageGlowTask != null) {

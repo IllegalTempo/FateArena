@@ -4,6 +4,8 @@ import com.fatearena.FateArenaPlugin;
 import com.fatearena.character.CharacterClass;
 import com.fatearena.core.Managers.AnimationManager;
 import com.fatearena.core.Managers.GameManager;
+import com.fatearena.core.Match.MatchInstance;
+import com.fatearena.core.Match.PlayerMatchStatus;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.FluidCollisionMode;
@@ -17,9 +19,13 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.awt.Color;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class GamePlayer extends GameMob{
+    private PlayerMatchStatus currentMatchStatus;
+
+
     private static final int POSITION_RING_POINTS = 20;
     private static final double POSITION_RING_RADIUS = 0.45;
     private static final int POSITION_RING_INTERVAL = 4;
@@ -49,11 +55,6 @@ public class GamePlayer extends GameMob{
 
     private boolean cancelable = false;
 
-    private static final int DEFENSE_MANA_COST = 5;
-    private static final int DEFENSE_ACTIVATE_MANA_COST = 10;
-    private static final double DEFENSE_SPHERE_RADIUS = 1.25;
-    private static final int DEFENSE_SPHERE_POINTS = 60;
-    private static final Particle.DustOptions DEFENSE_DUST = new Particle.DustOptions(org.bukkit.Color.AQUA, 0.8f);
 
     private static final int MANA_REGEN_RATE = 5;
 
@@ -61,6 +62,16 @@ public class GamePlayer extends GameMob{
         super(player, 100,100);
         this.player = player;
         animationManager = new AnimationManager(this);
+    }
+    public void joinMatch(PlayerMatchStatus status) {
+        this.currentMatchStatus = status;
+    }
+    public void leaveMatch() {
+        this.currentMatchStatus = null;
+
+    }
+    public PlayerMatchStatus getCurrentMatchStatus() {
+        return currentMatchStatus;
     }
     public void setAttackCooldownTicks(int ticks) {
         attackCooldownTicks = ticks;
@@ -79,8 +90,9 @@ public class GamePlayer extends GameMob{
         skill1UsedThisTick = true;
         choosenCharacterClass.skill1();
     }
-
+    @Override
     public void tick() {
+        super.tick();
         skill1UsedThisTick = false;
         animationManager.updateItemDisplay();
         animationManager.animationTick();
@@ -88,15 +100,18 @@ public class GamePlayer extends GameMob{
         updatePlayerActionbarDisplay();
         RaycastFacingEntity();
         updateTargetRing();
-        if(isDefending())
-        {
-            whileDefense();
-        }
+
     }
 
     public void oneSecondTick() {
         regenMana();
+        if(isDefending())
+        {
+            drainManaForDefense(DEFENSE_MANA_COST);
+        }
     }
+
+
     private void regenMana()
     {
         gainMana(MANA_REGEN_RATE);
@@ -154,12 +169,7 @@ public class GamePlayer extends GameMob{
     public boolean isCancelable() {
         return cancelable;
     }
-    private void whileDefense()
-    {
-        var center = getPlayer().getLocation().add(0, 1, 0);
-        ParticleEffects.spawnHollowSphere(center, DEFENSE_SPHERE_RADIUS, DEFENSE_SPHERE_POINTS,
-                Particle.DUST, DEFENSE_DUST);
-    }
+
     public void setCancelable(boolean cancelable) {
         this.cancelable = cancelable;
     }
@@ -185,17 +195,29 @@ public class GamePlayer extends GameMob{
             }
         }
     }
+    @Override
+    public void die(GameMob killer)
+    {
+        super.die(killer);
+        if(currentMatchStatus != null)
+        {
+            currentMatchStatus.Die(killer);
+        }
+    }
+    @Override
     public void defense()
     {
-        useMana(DEFENSE_ACTIVATE_MANA_COST);
+        super.defense();
         player.getPlayer().setWalkSpeed(0.1f);
         getAnimationManager().playAnimation("defense", false);
 
         setAttackCooldownTicks(0);
         player.getPlayer().setVelocity(new Vector(0, 0.2, 0));
     }
+    @Override
     public void undefense()
     {
+        super.undefense();
         player.getPlayer().setWalkSpeed(0.2f);
 
     }

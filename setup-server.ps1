@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-$java = 'C:\Program Files\Java\jdk-25.0.2\bin\java.exe'
+$java = Join-Path $env:USERPROFILE '.jdks\ms-25.0.4.1\bin\java.exe'
 if (-not (Test-Path -LiteralPath $java)) { throw 'Install JDK 25 or update the Java path in setup-server.ps1.' }
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) { throw 'Install Git for Windows and reopen your terminal.' }
 $tools = Join-Path $PSScriptRoot '.dev-tools'
