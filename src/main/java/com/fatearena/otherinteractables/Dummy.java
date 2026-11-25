@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class Dummy extends GameMob {
     public Dummy(Entity entity) {
-        super(entity, 10000000);
+        super(entity, 10000000,100);
         entity.setInvulnerable(true);
         if (entity instanceof ArmorStand stand) {
             stand.setVisible(false);

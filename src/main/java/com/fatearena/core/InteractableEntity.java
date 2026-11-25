@@ -8,7 +8,9 @@ public class InteractableEntity {
     public InteractableEntity(Entity entity) {
         this.entity = entity;
     }
-
+    public Entity getEntity() {
+        return entity;
+    }
     public void cleanup() {
     }
 }
